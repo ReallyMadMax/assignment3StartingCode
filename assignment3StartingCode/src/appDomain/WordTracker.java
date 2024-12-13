@@ -60,15 +60,17 @@ public class WordTracker {
             String outputFilename = args[2];
         }
 
+        processFile(filename);
+
     }
 
-    private BSTree<WordInfo> wordTree;
-
+    private static BSTree<WordInfo> wordTree;
+    
     public WordTracker() {
         wordTree = new BSTree<>();
     }
 
-    public void processFile(String filename) {
+    public static void processFile(String filename) {
         try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
             String line;
             int lineNumber = 1;
@@ -83,22 +85,22 @@ public class WordTracker {
                         WordInfo searchInfo = new WordInfo(word);
                         BSTreeNode<WordInfo> existingNode = wordTree.search(searchInfo);
 
-                        if (existingNode == null) {
-                            // Word doesn't exist in tree, add it
-                            searchInfo.addOccurrence(filename, lineNumber);
-                            wordTree.add(searchInfo);
-                        } else {
-                            // Word exists, update its occurrences
-                            existingNode.getElement().addOccurrence(filename, lineNumber);
-                        }
+                    if (existingNode == null) {
+                        // Word doesn't exist in tree, add it
+                        searchInfo.addOccurrence(filename, lineNumber);
+                        wordTree.add(searchInfo);
+                    } else {
+                        // Word exists, update its occurrences
+                        existingNode.getElement().addOccurrence(filename, lineNumber);
                     }
                 }
-                lineNumber++;
             }
-        } catch (IOException e) {
-            System.err.println("Error reading file: " + filename);
-            e.printStackTrace();
+            lineNumber++;
         }
+    } catch (IOException e) {
+        System.err.println("Error reading file: " + filename);
+        e.printStackTrace();
+    }
     }
 
     public void printWordOccurrences() {
